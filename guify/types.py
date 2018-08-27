@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Union as U, Tuple, List, NewType
 
 import tkinter as tk
@@ -14,8 +15,17 @@ class MultiStringVar(tk.Variable):
     def __init__(self, master=None, value=None, name=None):
         super().__init__(self, master, value, name)
 
+class Eval(tk.StringVar):
+    _default = None
+    def __init__(self, master=None, value=None, name=None):
+        super().__init__(self, master, value, name)
 
-VARS = {
+    def get(self):
+        eval(super().get(), globals(), locals())
+
+VARS = defaultdict(Eval)
+
+VARS.update({
     bool: tk.BooleanVar,
     float: tk.DoubleVar,
     str: tk.StringVar,
@@ -23,4 +33,4 @@ VARS = {
     FilePath: tk.StringVar,
     Files: MultiStringVar,
     Directory: tk.StringVar,
-}
+})
